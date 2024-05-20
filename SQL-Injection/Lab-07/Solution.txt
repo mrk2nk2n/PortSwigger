@@ -9,4 +9,3 @@ Analysis:
 
 (2) Determine the number of columns
 
-(3) 
