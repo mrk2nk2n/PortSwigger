@@ -1,0 +1,12 @@
+Lab-07 - SQL Injection attack, quering the database type and version on Oracle
+
+Vulnerability - Product category filter
+Goal - display the database version string
+
+Analysis:
+
+(1) Verify the vulnerability by adding a ' comment character which should cause an Internal Server Error
+
+(2) Determine the number of columns
+
+(3) 
